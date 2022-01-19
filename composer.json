@@ -10,6 +10,11 @@
             "Onecode\\ShopFlixConnector\\Library\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Spyrmp\\ShopFlixConnector\\Tests\\": "tests/"
+        }
+    },
     "license": "LGPL-3.0",
     "version": "1.0.0",
     "authors": [
@@ -17,5 +22,9 @@
             "name": "spyrm",
             "email": "spyros@onecode.gr"
         }
-    ]
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^9",
+        "symfony/var-dumper": "^5.4"
+    }
 }
