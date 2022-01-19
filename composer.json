@@ -1,5 +1,5 @@
 {
-    "name": "onecode/shopflix_connector_library",
+    "name": "onecode/shopflix-connector-library",
     "type": "library",
     "require": {
         "guzzlehttp/guzzle": "^6.5.5",
