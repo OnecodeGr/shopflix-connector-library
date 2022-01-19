@@ -366,14 +366,14 @@ class Connector
 
     public function printManifest($shipments)
     {
-
-        $path = $this->_path . "courier/?custom_manifest";
-        $shipmentsData = '[' . implode(",", $shipments) . ']';
-        $shipmentsData = '[16,18,26,123]';
-        $response = $this->_httpClient->get($path, ['form_params' => ["" => $shipmentsData]]);
-
-        dd($response, $response->getHeaders(), $shipmentsData, $response->getBody()->getContents(), $shipments);
-
+        $path = $this->_path . "courier";
+        $response = $this->_httpClient->get($path, [
+                "query" => [
+                    "custom_manifest" => 1,
+                    "shipments" => implode(",", $shipments)
+                ]
+            ]
+        );
         $content = $response->getBody()->getContents();
         return $this->_jsonSerializer->deserialize($content);
     }
