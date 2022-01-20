@@ -35,9 +35,6 @@ class Connector
     const MARKETPLACE_SHIPPED_ORDER_STATUS = "K";
     const MARKETPLACE_ON_THE_WAY_ORDER_STATUS = "J";
 
-    /**
-     * @var Client
-     */
     private $_httpClient;
     private $_jsonSerializer;
     private $_baseUrl;
@@ -54,19 +51,19 @@ class Connector
     private $_endTime;
 
 
-    public function __construct($username, $apikey, $apiUrl)
+    public function __construct($username, $apikey, $apiUrl, $modifier = "-6 hours")
     {
         $this->_username = $username;
         $this->_password = $apikey;
 
         $this->_baseUrl = $apiUrl;
-        $this->_jsonSerializer = new Json();
+        $this->_jsonSerializer = new Json;
         $this->initiateClient();
         $dateTime = new DateTime();
 
-        $this->_startTime = $dateTime->getTimestamp();
-        $dateTime->modify('-6 hours');
         $this->_endTime = $dateTime->getTimestamp();
+        $dateTime->modify($modifier);
+        $this->_startTime = $dateTime->getTimestamp();
     }
 
     private function initiateClient()
@@ -91,6 +88,9 @@ class Connector
         $path = $this->_path . "orders";
         $query = $this->getOrderQueryByStatus($orderStatus, $startTime, $endTime);
 
+        if ($orderStatus == self::MARKETPLACE_SHIPPED_ORDER_STATUS) {
+            dd($this->_baseUrl . "/orders?" . http_build_query($query), $this->getPageForOrders($query, true));
+        }
         for ($page = 1; $page <= $this->getPageForOrders($query); $page++) {
             $query['page'] = $page;
 
@@ -118,15 +118,19 @@ class Connector
 
         return $data;
 
+
     }
 
 
-    private function getPageForOrders($query): int
+    private function getPageForOrders($query, $die = false): int
     {
         $path = $this->_path . "orders";
         $response = $this->_httpClient->get($path, ['query' => $query]);
 
         $responseObject = $this->_jsonSerializer->deserialize($response->getBody()->getContents());
+        if ($die) {
+            dd(json_encode($responseObject), $this->_username, $this->_password);
+        }
         $itemPerPages = $responseObject['params']['items_per_page'];
         $totalItems = $responseObject['params']['total_items'];
         return (int)ceil($totalItems / $itemPerPages);
@@ -159,7 +163,7 @@ class Connector
                         OrderInterface::CUSTOMER_EMAIL => $responseObject['email'],
                         OrderInterface::CUSTOMER_FIRSTNAME => $responseObject['firstname'],
                         OrderInterface::CUSTOMER_LASTNAME => $responseObject['lastname'],
-                        OrderInterface::CUSTOMER_REMOTE_IP => $responseObject['ip_address']??"",
+                        OrderInterface::CUSTOMER_REMOTE_IP => $responseObject['ip_address'] ?? "",
                         OrderInterface::CUSTOMER_NOTE => $responseObject['notes'],],
                 "addresses" => [
                     [
