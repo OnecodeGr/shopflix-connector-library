@@ -311,7 +311,10 @@ class Connector
      */
     public function forShipment($shipmentId)
     {
-        $requestData = ["status" => 'A',];
+        $requestData = [
+            "status" => 'A',
+            "carrier" => 'funship'
+        ];
 
         $this->updateShipment($shipmentId, $requestData);
     }
