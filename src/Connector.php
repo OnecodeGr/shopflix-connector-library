@@ -29,11 +29,12 @@ use Onecode\ShopFlixConnector\Library\Interfaces\ShipmentTrackInterface;
 class Connector
 {
 
-    const MARKETPLACE_NEW_ORDER_STATUS = "O";
-    const MARKETPLACE_CANCEL_ORDER_STATUS = "I";
-    const MARKETPLACE_PARTIAL_ORDER_STATUS = "E";
-    const MARKETPLACE_SHIPPED_ORDER_STATUS = "K";
-    const MARKETPLACE_ON_THE_WAY_ORDER_STATUS = "J";
+    const SHOPFLIX_NEW_ORDER_STATUS = "O";
+    const SHOPFLIX_CANCEL_ORDER_STATUS = "I";
+    const SHOPFLIX_PARTIAL_ORDER_STATUS = "E";
+    const SHOPFLIX_SHIPPED_ORDER_STATUS = "K";
+    const SHOPFLIX_COMPLETED_ORDER_STATUS = "C";
+    const SHOPFLIX_ON_THE_WAY_ORDER_STATUS = "J";
 
     private $_httpClient;
     private $_jsonSerializer;
@@ -78,7 +79,7 @@ class Connector
 
     public function getNewOrders(): array
     {
-        return $this->getOrders(self::MARKETPLACE_NEW_ORDER_STATUS);
+        return $this->getOrders(self::SHOPFLIX_NEW_ORDER_STATUS);
     }
 
     private function getOrders($orderStatus, $startTime = false, $endTime = false): array
@@ -88,7 +89,7 @@ class Connector
         $path = $this->_path . "orders";
         $query = $this->getOrderQueryByStatus($orderStatus, $startTime, $endTime);
 
-        if ($orderStatus == self::MARKETPLACE_SHIPPED_ORDER_STATUS) {
+        if ($orderStatus == self::SHOPFLIX_SHIPPED_ORDER_STATUS) {
             dd($this->_baseUrl . "/orders?" . http_build_query($query), $this->getPageForOrders($query, true));
         }
         for ($page = 1; $page <= $this->getPageForOrders($query); $page++) {
@@ -236,7 +237,7 @@ class Connector
     {
 
         return $this->getOrders(
-            self::MARKETPLACE_PARTIAL_ORDER_STATUS,
+            self::SHOPFLIX_PARTIAL_ORDER_STATUS,
             $this->_startTime,
             $this->_endTime
         );
@@ -246,7 +247,17 @@ class Connector
     {
 
         return $this->getOrders(
-            self::MARKETPLACE_SHIPPED_ORDER_STATUS,
+            self::SHOPFLIX_SHIPPED_ORDER_STATUS,
+            $this->_startTime,
+            $this->_endTime
+        );
+    }
+
+    public function getCompletedOrders()
+    {
+
+        return $this->getOrders(
+            self::SHOPFLIX_SHIPPED_ORDER_STATUS,
             $this->_startTime,
             $this->_endTime
         );
@@ -257,7 +268,7 @@ class Connector
     {
 
         return $this->getOrders(
-            self::MARKETPLACE_CANCEL_ORDER_STATUS,
+            self::SHOPFLIX_CANCEL_ORDER_STATUS,
             $this->_startTime,
             $this->_endTime
         );
@@ -268,7 +279,7 @@ class Connector
     {
 
         return $this->getOrders(
-            self::MARKETPLACE_ON_THE_WAY_ORDER_STATUS,
+            self::SHOPFLIX_ON_THE_WAY_ORDER_STATUS,
             $this->_startTime,
             $this->_endTime
         );
@@ -279,7 +290,7 @@ class Connector
      */
     public function picking($orderId)
     {
-        $requestData = ["status" => 'G', "notify_user" => 0, "notify_department" => 0, "notify_vendor" => 0];
+        $requestData = ["status" => 'G', "notify_user" => 1, "notify_department" => 0, "notify_vendor" => 0];
 
         $this->updateOrder($orderId, $requestData);
 
@@ -307,7 +318,7 @@ class Connector
     }
 
     /**
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function forShipment($shipmentId)
     {
@@ -319,6 +330,12 @@ class Connector
         $this->updateShipment($shipmentId, $requestData);
     }
 
+    /**
+     * @param $shipmentId
+     * @param $requestData
+     * @return void
+     * @throws GuzzleException|Exception
+     */
     private function updateShipment($shipmentId, $requestData = [])
     {
 
