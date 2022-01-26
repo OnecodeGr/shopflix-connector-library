@@ -89,9 +89,7 @@ class Connector
         $path = $this->_path . "orders";
         $query = $this->getOrderQueryByStatus($orderStatus, $startTime, $endTime);
 
-        if ($orderStatus == self::SHOPFLIX_SHIPPED_ORDER_STATUS) {
-            dd($this->_baseUrl . "/orders?" . http_build_query($query), $this->getPageForOrders($query, true));
-        }
+
         for ($page = 1; $page <= $this->getPageForOrders($query); $page++) {
             $query['page'] = $page;
 
@@ -257,7 +255,7 @@ class Connector
     {
 
         return $this->getOrders(
-            self::SHOPFLIX_SHIPPED_ORDER_STATUS,
+            self::SHOPFLIX_COMPLETED_ORDER_STATUS,
             $this->_startTime,
             $this->_endTime
         );
