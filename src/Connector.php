@@ -35,6 +35,7 @@ class Connector
     const SHOPFLIX_SHIPPED_ORDER_STATUS = "K";
     const SHOPFLIX_COMPLETED_ORDER_STATUS = "C";
     const SHOPFLIX_ON_THE_WAY_ORDER_STATUS = "J";
+    const SHOPFLIX_REJECTED_STATUS = "D";
 
     private $_httpClient;
     private $_jsonSerializer;
@@ -359,7 +360,7 @@ class Connector
     public function rejected($orderId, $message)
     {
         $requestData = [
-            "status" => 'E',
+            "status" => self::SHOPFLIX_REJECTED_STATUS,
             "notify_user" => 0,
             "notify_department" => 0,
             "notify_vendor" => 0,
