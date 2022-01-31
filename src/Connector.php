@@ -209,12 +209,17 @@ class Connector
     {
 
         switch ($status) {
-            case "O":
-                return "pending_acceptance";
-            case "C":
-                return "accepted";
-            case "D":
-                return "cancelled";
+            case self::SHOPFLIX_NEW_ORDER_STATUS:
+                return OrderInterface::STATE_PENDING_ACCEPTANCE;
+            case self::SHOPFLIX_CANCEL_ORDER_STATUS:
+                return OrderInterface::STATE_CANCELED;
+            case self::SHOPFLIX_PARTIAL_ORDER_STATUS:
+            case self::SHOPFLIX_SHIPPED_ORDER_STATUS:
+            case self::SHOPFLIX_COMPLETED_ORDER_STATUS:
+            case self::SHOPFLIX_ON_THE_WAY_ORDER_STATUS:
+                return OrderInterface::STATE_COMPLETED;
+            case self::SHOPFLIX_REJECTED_STATUS:
+                return OrderInterface::STATE_REJECTED;
         }
     }
 
@@ -222,12 +227,21 @@ class Connector
     {
 
         switch ($status) {
-            case "O":
-                return "pending_acceptance";
-            case "C":
-                return "completed";
-            case "D":
-                return "cancelled";
+            case self::SHOPFLIX_NEW_ORDER_STATUS:
+                return OrderInterface::STATUS_PENDING_ACCEPTANCE;
+            case self::SHOPFLIX_CANCEL_ORDER_STATUS:
+                return OrderInterface::STATUS_CANCELED;
+            case self::SHOPFLIX_PARTIAL_ORDER_STATUS:
+                return OrderInterface::STATUS_PARTIAL_SHIPPED;
+            case self::SHOPFLIX_SHIPPED_ORDER_STATUS:
+                return OrderInterface::STATUS_SHIPPED;
+            case self::SHOPFLIX_COMPLETED_ORDER_STATUS:
+                return OrderInterface::STATUS_COMPLETED;
+            case self::SHOPFLIX_ON_THE_WAY_ORDER_STATUS:
+                return OrderInterface::STATUS_ON_THE_WAY;
+            case self::SHOPFLIX_REJECTED_STATUS:
+                return OrderInterface::STATUS_REJECTED;
+
         }
 
     }
