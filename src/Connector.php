@@ -142,7 +142,7 @@ class Connector
      * @return array
      * @throws GuzzleException
      */
-    private function getOrderDetail($orderId): array
+    public function getOrderDetail($orderId): array
     {
         $data = [];
         if ($orderId) {
