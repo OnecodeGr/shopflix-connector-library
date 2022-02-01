@@ -32,6 +32,7 @@ class Connector
     const SHOPFLIX_NEW_ORDER_STATUS = "O";
     const SHOPFLIX_CANCEL_ORDER_STATUS = "I";
     const SHOPFLIX_PARTIAL_ORDER_STATUS = "E";
+    const SHOPFLIX_READY_TO_SHIPPED_STATUS = "H";
     const SHOPFLIX_SHIPPED_ORDER_STATUS = "K";
     const SHOPFLIX_COMPLETED_ORDER_STATUS = "C";
     const SHOPFLIX_ON_THE_WAY_ORDER_STATUS = "J";
@@ -207,12 +208,13 @@ class Connector
 
     private function getState($status)
     {
-
         switch ($status) {
             case self::SHOPFLIX_NEW_ORDER_STATUS:
                 return OrderInterface::STATE_PENDING_ACCEPTANCE;
             case self::SHOPFLIX_CANCEL_ORDER_STATUS:
                 return OrderInterface::STATE_CANCELED;
+            case self::SHOPFLIX_READY_TO_SHIPPED_STATUS;
+                return OrderInterface::STATE_ACCEPTED;
             case self::SHOPFLIX_PARTIAL_ORDER_STATUS:
             case self::SHOPFLIX_SHIPPED_ORDER_STATUS:
             case self::SHOPFLIX_COMPLETED_ORDER_STATUS:
@@ -225,7 +227,6 @@ class Connector
 
     private function getStatus($status)
     {
-
         switch ($status) {
             case self::SHOPFLIX_NEW_ORDER_STATUS:
                 return OrderInterface::STATUS_PENDING_ACCEPTANCE;
@@ -233,6 +234,8 @@ class Connector
                 return OrderInterface::STATUS_CANCELED;
             case self::SHOPFLIX_PARTIAL_ORDER_STATUS:
                 return OrderInterface::STATUS_PARTIAL_SHIPPED;
+            case self::SHOPFLIX_READY_TO_SHIPPED_STATUS:
+                return OrderInterface::STATUS_READY_TO_BE_SHIPPED;
             case self::SHOPFLIX_SHIPPED_ORDER_STATUS:
                 return OrderInterface::STATUS_SHIPPED;
             case self::SHOPFLIX_COMPLETED_ORDER_STATUS:
