@@ -214,7 +214,6 @@ class Connector
             case self::SHOPFLIX_CANCEL_ORDER_STATUS:
                 return OrderInterface::STATE_CANCELED;
             case self::SHOPFLIX_READY_TO_SHIPPED_STATUS;
-                return OrderInterface::STATE_ACCEPTED;
             case self::SHOPFLIX_PARTIAL_ORDER_STATUS:
             case self::SHOPFLIX_SHIPPED_ORDER_STATUS:
             case self::SHOPFLIX_COMPLETED_ORDER_STATUS:
