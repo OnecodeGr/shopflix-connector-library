@@ -38,6 +38,15 @@ class Connector
     const SHOPFLIX_ON_THE_WAY_ORDER_STATUS = "J";
     const SHOPFLIX_REJECTED_STATUS = "D";
 
+
+    const SHOPFLIX_COMPANY_NAME = "103";
+    const SHOPFLIX_IS_INVOICE = "115";
+    const SHOPFLIX_COMPANY_OWNER = "116";
+    const SHOPFLIX_COMPANY_ADDRESS = "117";
+    const SHOPFLIX_COMPANY_VAT_NUMBER = "119";
+    const SHOPFLIX_TAX_OFFICE = "120";
+
+
     private $_httpClient;
     private $_jsonSerializer;
     private $_baseUrl;
@@ -190,9 +199,25 @@ class Connector
                         AddressInterface::EMAIL => $responseObject['email'],
                         AddressInterface::COUNTRY_ID => $responseObject['b_country'],
                     ]
+                ],
+                "items" => [],
+
+            ];
+
+            if ($responseObject["fields"][self::SHOPFLIX_IS_INVOICE] == "Y") {
+                $data[OrderInterface::IS_INVOICE] = true;
+                $data["invoice"] = [
+                    OrderInterface::COMPANY_NAME => $responseObject["fields"][self::SHOPFLIX_COMPANY_NAME],
+                    OrderInterface::COMPANY_ADDRESS => $responseObject["fields"][self::SHOPFLIX_COMPANY_ADDRESS],
+                    OrderInterface::COMPANY_OWNER => $responseObject["fields"][self::SHOPFLIX_COMPANY_OWNER],
+                    OrderInterface::COMPANY_VAT_NUMBER => $responseObject["fields"][self::SHOPFLIX_COMPANY_VAT_NUMBER],
+                    OrderInterface::TAX_OFFICE => $responseObject["fields"][self::SHOPFLIX_TAX_OFFICE],
+                ];
+            } else {
+                $data[OrderInterface::IS_INVOICE] = false;
+            }
 
 
-                ], "items" => [],];
             foreach ($responseObject['products'] as $product) {
                 $data["items"][] = [
                     ItemInterface::SKU => $product['product_code'],

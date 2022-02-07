@@ -41,4 +41,11 @@ interface OrderInterface
     const STATUS_SHIPPED = "shipped";
     const STATUS_CANCELED = "canceled";
     const STATUS_PARTIAL_SHIPPED = "partial_shipped";
+
+    const COMPANY_NAME = "company_name";
+    const IS_INVOICE = "is_invoice";
+    const COMPANY_OWNER = "company_owner";
+    const COMPANY_ADDRESS = "company_address";
+    const COMPANY_VAT_NUMBER = "company_vat_number";
+    const TAX_OFFICE = "tax_office";
 }
