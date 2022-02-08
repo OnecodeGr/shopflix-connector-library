@@ -207,7 +207,7 @@ class Connector
             if ($responseObject["fields"][self::SHOPFLIX_IS_INVOICE] == "Y") {
                 $data[OrderInterface::IS_INVOICE] = true;
                 $data["invoice"] = [
-                    OrderInterface::COMPANY_NAME => $responseObject["fields"][self::SHOPFLIX_COMPANY_NAME],
+                    OrderInterface::COMPANY_NAME => $responseObject["fields"][self::SHOPFLIX_COMPANY_NAME]??$responseObject["fields"][self::SHOPFLIX_COMPANY_OWNER],
                     OrderInterface::COMPANY_ADDRESS => $responseObject["fields"][self::SHOPFLIX_COMPANY_ADDRESS],
                     OrderInterface::COMPANY_OWNER => $responseObject["fields"][self::SHOPFLIX_COMPANY_OWNER],
                     OrderInterface::COMPANY_VAT_NUMBER => $responseObject["fields"][self::SHOPFLIX_COMPANY_VAT_NUMBER],
