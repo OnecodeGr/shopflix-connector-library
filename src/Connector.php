@@ -234,7 +234,7 @@ class Connector
 
             ];
 
-            if ($responseObject["fields"][self::SHOPFLIX_IS_INVOICE] == "Y") {
+            if (isset($responseObject["fields"][self::SHOPFLIX_IS_INVOICE]) && $responseObject["fields"][self::SHOPFLIX_IS_INVOICE] == "Y") {
                 $data[OrderInterface::IS_INVOICE] = true;
                 $data["invoice"] = [
                     OrderInterface::COMPANY_NAME => $responseObject["fields"][self::SHOPFLIX_COMPANY_NAME] ?? $responseObject["fields"][self::SHOPFLIX_COMPANY_OWNER],
