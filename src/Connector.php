@@ -203,7 +203,7 @@ class Connector
                         OrderInterface::CUSTOMER_LASTNAME => $responseObject['lastname'],
                         OrderInterface::CUSTOMER_REMOTE_IP => $responseObject['ip_address'] ?? "",
                         OrderInterface::CUSTOMER_NOTE => $responseObject['notes'],
-                        OrderInterface::CREATED_AT => $response['timestamp']
+                        OrderInterface::CREATED_AT => $responseObject['timestamp']
                         ],
                 "addresses" => [
                     [
