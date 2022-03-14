@@ -4,7 +4,7 @@
     "require": {
         "guzzlehttp/guzzle": "^6.5.5",
         "spyrmp/json-serializer-deserializer": "^1.0",
-        "monolog/monolog": "^2.3"
+        "monolog/monolog": "^1.27"
     },
     "autoload": {
         "psr-4": {
