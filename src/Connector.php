@@ -12,8 +12,11 @@ use DateTime;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\RequestOptions;
 use InvalidArgumentException;
+use Monolog\Handler\StreamHandler;
+use Psr\Http\Message\RequestInterface;
 use Spyrmp\JsonSerializerDeserializer\Json;
 use Onecode\ShopFlixConnector\Library\Interfaces\AddressInterface;
 use Onecode\ShopFlixConnector\Library\Interfaces\ItemInterface;
@@ -21,6 +24,10 @@ use Onecode\ShopFlixConnector\Library\Interfaces\OrderInterface;
 use Onecode\ShopFlixConnector\Library\Interfaces\ShipmentInterface;
 use Onecode\ShopFlixConnector\Library\Interfaces\ShipmentItemInterface;
 use Onecode\ShopFlixConnector\Library\Interfaces\ShipmentTrackInterface;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\MessageFormatter;
+use Monolog\Logger;
 
 /**
  * Class Connector
@@ -47,6 +54,9 @@ class Connector
     const SHOPFLIX_TAX_OFFICE = "120";
 
 
+    /**
+     * @var Client
+     */
     private $_httpClient;
     private $_jsonSerializer;
     private $_baseUrl;
@@ -63,13 +73,30 @@ class Connector
     private $_endTime;
 
 
-    public function __construct($username, $apikey, $apiUrl, $modifier = "-6 hours")
+    private $_debug = false;
+
+
+    private $_clientRequestData = [];
+
+    /**
+     * @param $username
+     * @param $apikey
+     * @param $apiUrl
+     * @param $modifier
+     * @param $debugMode
+     */
+    public function __construct($username, $apikey, $apiUrl, $modifier = "-6 hours", $debugMode = false)
     {
         $this->_username = $username;
         $this->_password = $apikey;
 
         $this->_baseUrl = $apiUrl;
         $this->_jsonSerializer = new Json;
+        $this->_clientRequestData = ["timeout" => 90, 'auth' => [$this->_username, $this->_password]];
+
+        if ($debugMode) {
+            $this->enableDebug();
+        }
         $this->initiateClient();
         $dateTime = new DateTime();
 
@@ -84,7 +111,8 @@ class Connector
 
         $uri = preg_replace('/^www\./', '', ($urlParts['scheme'] ?? "http") . "://" . $urlParts['host']);
         $this->_path = $urlParts['path'] . "/" ?? '';
-        $this->_httpClient = new Client(["base_uri" => $uri, "timeout" => 90, 'auth' => [$this->_username, $this->_password]]);
+        $this->_clientRequestData["base_uri"] = $uri;
+        $this->_httpClient = new Client($this->_clientRequestData);
     }
 
 
@@ -174,7 +202,9 @@ class Connector
                         OrderInterface::CUSTOMER_FIRSTNAME => $responseObject['firstname'],
                         OrderInterface::CUSTOMER_LASTNAME => $responseObject['lastname'],
                         OrderInterface::CUSTOMER_REMOTE_IP => $responseObject['ip_address'] ?? "",
-                        OrderInterface::CUSTOMER_NOTE => $responseObject['notes'],],
+                        OrderInterface::CUSTOMER_NOTE => $responseObject['notes'],
+                        OrderInterface::CREATED_AT => $response['timestamp']
+                        ],
                 "addresses" => [
                     [
                         AddressInterface::FIRSTNAME => !empty($responseObject["s_firstname"]) ? $responseObject["s_firstname"] : $responseObject['firstname'],
@@ -207,7 +237,7 @@ class Connector
             if ($responseObject["fields"][self::SHOPFLIX_IS_INVOICE] == "Y") {
                 $data[OrderInterface::IS_INVOICE] = true;
                 $data["invoice"] = [
-                    OrderInterface::COMPANY_NAME => $responseObject["fields"][self::SHOPFLIX_COMPANY_NAME]??$responseObject["fields"][self::SHOPFLIX_COMPANY_OWNER],
+                    OrderInterface::COMPANY_NAME => $responseObject["fields"][self::SHOPFLIX_COMPANY_NAME] ?? $responseObject["fields"][self::SHOPFLIX_COMPANY_OWNER],
                     OrderInterface::COMPANY_ADDRESS => $responseObject["fields"][self::SHOPFLIX_COMPANY_ADDRESS],
                     OrderInterface::COMPANY_OWNER => $responseObject["fields"][self::SHOPFLIX_COMPANY_OWNER],
                     OrderInterface::COMPANY_VAT_NUMBER => $responseObject["fields"][self::SHOPFLIX_COMPANY_VAT_NUMBER],
@@ -381,6 +411,7 @@ class Connector
 
         $path = $this->_path . "shipments/$shipmentId";
         $response = $this->_httpClient->put($path, [RequestOptions::JSON => $requestData]);
+
         if ($response->getStatusCode() >= 400 && $response->getStatusCode() <= 500) {
             throw new Exception($response->getBody()->getContents());
         }
@@ -452,12 +483,37 @@ class Connector
         return $this->_jsonSerializer->deserialize($content);
     }
 
-    public function printVoucher($voucher)
+    public function printVoucher($voucher, $labelFormat)
     {
         $path = $this->_path . "courier";
-        $response = $this->_httpClient->get($path, ['query' => ['print' => $voucher, 'labelFormat' => 'pdf']]);
+        $query = $this->getPrintQuery($labelFormat, $voucher);
+        $response = $this->_httpClient->get($path, ['query' => $query, "debug" => $this->_debug]);
         $content = $response->getBody()->getContents();
         return $this->_jsonSerializer->deserialize($content);
+
+    }
+
+    private function getPrintQuery($labelFormat, $voucher, $type = "print")
+    {
+
+        $query = [];
+        if ($type == "print") {
+            $query['print'] = $voucher;
+        } else {
+            $query['printmass'] = implode(",", $voucher);
+        }
+
+        switch ($labelFormat) {
+            default:
+                $query['labelFormat'] = $labelFormat;
+                break;
+            case "singlepdf_100x150":
+                $query['labelFormat'] = $labelFormat;
+                $query['p'] = "thermiko";
+                break;
+        }
+        return $query;
+
     }
 
     public function createVoucher($shipmentId)
@@ -488,11 +544,11 @@ class Connector
         return $json['shipments'][0]['tracking_number'] ?? "";
     }
 
-    public function printVouchers($vouchers)
+    public function printVouchers($vouchers, $labelFormat)
     {
         $path = $this->_path . "courier";
-
-        $response = $this->_httpClient->get($path, ['query' => ['printmass' => implode(",", $vouchers), 'labelFormat' => 'pdf']]);
+        $query = $this->getPrintQuery($labelFormat, $vouchers, "printmass");
+        $response = $this->_httpClient->get($path, ['query' => $query, "debug" => $this->_debug]);
         $content = $response->getBody()->getContents();
         return $this->_jsonSerializer->deserialize($content);
     }
@@ -542,5 +598,27 @@ class Connector
             case "S":
                 return 3; #on the way
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function enableDebug(): Connector
+    {
+        $this->_debug = true;
+        $logger = new Logger('Logger');
+        $logger->pushHandler(new StreamHandler(__DIR__ . '/../../../var/logs/onecode_shopflix/requests.log'));
+        $stack = HandlerStack::create();
+        $stack->push(
+            Middleware::log(
+                $logger,
+                new MessageFormatter(MessageFormatter::CLF . " {req_headers}")
+            )
+        );
+
+        $this->_clientRequestData['handler'] = $stack;
+
+
+        return $this;
     }
 }

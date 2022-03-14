@@ -23,6 +23,7 @@ interface OrderInterface
     const CUSTOMER_REMOTE_IP = "customer_remote_ip";
     const CUSTOMER_NOTE = "customer_note";
     const STATE = "state";
+    const CREATED_AT = "created_at";
 
 
     const STATE_ACCEPTED = "accepted";
