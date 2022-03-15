@@ -85,7 +85,7 @@ class Connector
      * @param $modifier
      * @param $debugMode
      */
-    public function __construct($username, $apikey, $apiUrl, $modifier = "-6 hours", $debugMode = false)
+    public function __construct($username, $apikey, $apiUrl, $modifier = "-6 hours")
     {
         $this->_username = $username;
         $this->_password = $apikey;
@@ -94,9 +94,7 @@ class Connector
         $this->_jsonSerializer = new Json;
         $this->_clientRequestData = ["timeout" => 90, 'auth' => [$this->_username, $this->_password]];
 
-        if ($debugMode) {
-            $this->enableDebug();
-        }
+
         $this->initiateClient();
         $dateTime = new DateTime();
 
@@ -600,25 +598,5 @@ class Connector
         }
     }
 
-    /**
-     * @throws Exception
-     */
-    public function enableDebug(): Connector
-    {
-        $this->_debug = true;
-        $logger = new Logger('Logger');
-        $logger->pushHandler(new StreamHandler(__DIR__ . '/../../../var/logs/onecode_shopflix/requests.log'));
-        $stack = HandlerStack::create();
-        $stack->push(
-            Middleware::log(
-                $logger,
-                new MessageFormatter(MessageFormatter::CLF . " {req_headers}")
-            )
-        );
-
-        $this->_clientRequestData['handler'] = $stack;
-
-
-        return $this;
-    }
 }
+

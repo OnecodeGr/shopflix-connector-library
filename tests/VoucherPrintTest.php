@@ -24,7 +24,7 @@ class VoucherPrintTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->connector = new Connector($_ENV['USERNAME'], $_ENV['PASSWORD'], $_ENV["API_URL"],"-7 days", true);
+        $this->connector = new Connector($_ENV['USERNAME'], $_ENV['PASSWORD'], $_ENV["API_URL"],"-7 days");
         $this->filepath = __DIR__ . "/vouchers/print/";
         if (!is_dir($this->filepath)) mkdir($this->filepath, 0777, true);
     }
