@@ -202,7 +202,7 @@ class Connector
                         OrderInterface::CUSTOMER_REMOTE_IP => $responseObject['ip_address'] ?? "",
                         OrderInterface::CUSTOMER_NOTE => $responseObject['notes'],
                         OrderInterface::CREATED_AT => $responseObject['timestamp']
-                        ],
+                    ],
                 "addresses" => [
                     [
                         AddressInterface::FIRSTNAME => !empty($responseObject["s_firstname"]) ? $responseObject["s_firstname"] : $responseObject['firstname'],
@@ -481,7 +481,7 @@ class Connector
         return $this->_jsonSerializer->deserialize($content);
     }
 
-    public function printVoucher($voucher, $labelFormat)
+    public function printVoucher($voucher, $labelFormat = "pdf")
     {
         $path = $this->_path . "courier";
         $query = $this->getPrintQuery($labelFormat, $voucher);
@@ -542,7 +542,7 @@ class Connector
         return $json['shipments'][0]['tracking_number'] ?? "";
     }
 
-    public function printVouchers($vouchers, $labelFormat)
+    public function printVouchers($vouchers, $labelFormat = "pdf")
     {
         $path = $this->_path . "courier";
         $query = $this->getPrintQuery($labelFormat, $vouchers, "printmass");
