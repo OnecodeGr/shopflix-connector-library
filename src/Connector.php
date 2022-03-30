@@ -12,27 +12,17 @@ use DateTime;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\RequestOptions;
 use InvalidArgumentException;
-use Monolog\Handler\StreamHandler;
-use Psr\Http\Message\RequestInterface;
 use Spyrmp\JsonSerializerDeserializer\Json;
-use Onecode\ShopFlixConnector\Library\Interfaces\AddressInterface;
-use Onecode\ShopFlixConnector\Library\Interfaces\ItemInterface;
-use Onecode\ShopFlixConnector\Library\Interfaces\OrderInterface;
-use Onecode\ShopFlixConnector\Library\Interfaces\ShipmentInterface;
-use Onecode\ShopFlixConnector\Library\Interfaces\ShipmentItemInterface;
-use Onecode\ShopFlixConnector\Library\Interfaces\ShipmentTrackInterface;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\MessageFormatter;
-use Monolog\Logger;
+
+
 
 /**
  * Class Connector
  * @package Onecode\ShopFlixConnector\Library
  */
+
 class Connector
 {
 
@@ -52,8 +42,78 @@ class Connector
     const SHOPFLIX_COMPANY_ADDRESS = "117";
     const SHOPFLIX_COMPANY_VAT_NUMBER = "119";
     const SHOPFLIX_TAX_OFFICE = "120";
+    /**
+     * Address Const
+     */
+    const POSTCODE = 'postcode';
+    const LASTNAME = 'lastname';
+    const STREET = 'street';
+    const CITY = 'city';
+    const EMAIL = 'email';
+    const ADDRESS_TYPE = 'address_type';
+    const TELEPHONE = 'telephone';
+    const COUNTRY_ID = 'country_id';
+    const FIRSTNAME = 'firstname';
+    /**
+     * Item Const
+     */
+    const SKU = "sku";
+    const PRICE = "price";
+    const QTY = "qty";
+    /**
+     * Order Const
+     */
+    const SHOPFLIX_ORDER_ID = "shopflix_order_id";
+    const INCREMENT_ID = "increment_id";
+    const STATUS = "status";
+    const SUBTOTAL = "subtotal";
+    const DISCOUNT_AMOUNT = "discount_amount";
+    const TOTAL_PAID = "total_paid";
+    const CUSTOMER_EMAIL = "customer_email";
+    const CUSTOMER_FIRSTNAME = "customer_firstname";
+    const CUSTOMER_LASTNAME = "customer_lastname";
+    const CUSTOMER_REMOTE_IP = "customer_remote_ip";
+    const CUSTOMER_NOTE = "customer_note";
+    const STATE = "state";
+    const CREATED_AT = "created_at";
 
 
+    const STATE_ACCEPTED = "accepted";
+    const STATE_REJECTED = "rejected";
+    const STATE_CANCELED = "canceled";
+    const STATE_PENDING_ACCEPTANCE = "pending_acceptance";
+    const STATE_COMPLETED = "completed";
+
+    const STATUS_PICKING = "picking";
+    const STATUS_ACCEPTED = "accepted";
+    const STATUS_READY_TO_BE_SHIPPED = "ready_to_be_shipped";
+    const STATUS_PENDING_ACCEPTANCE = "pending_acceptance";
+    const STATUS_REJECTED = "rejected";
+    const STATUS_ON_THE_WAY = "on_the_way";
+    const STATUS_COMPLETED = "completed";
+    const STATUS_SHIPPED = "shipped";
+    const STATUS_CANCELED = "canceled";
+    const STATUS_PARTIAL_SHIPPED = "partial_shipped";
+
+    const COMPANY_NAME = "company_name";
+    const IS_INVOICE = "is_invoice";
+    const COMPANY_OWNER = "company_owner";
+    const COMPANY_ADDRESS = "company_address";
+    const COMPANY_VAT_NUMBER = "company_vat_number";
+    const TAX_OFFICE = "tax_office";
+    /**
+     * Shipment Const
+     */
+    const SHIPMENT_STATUS = 'shipment_status';
+    const ITEMS = 'items';
+    const TRACKS = 'tracks';
+
+
+    /**
+     * Tracking Const
+     */
+    const TRACK_NUMBER = 'track_number';
+    const TRACKING_URL = 'tracking_url';
     /**
      * @var Client
      */
@@ -93,7 +153,7 @@ class Connector
         $this->_baseUrl = $apiUrl;
         $this->_jsonSerializer = new Json;
         $this->_clientRequestData = ["timeout" => 90, 'auth' => [$this->_username, $this->_password]];
-
+        
 
         $this->initiateClient();
         $dateTime = new DateTime();
@@ -116,7 +176,7 @@ class Connector
 
     public function getNewOrders(): array
     {
-        return $this->getOrders(self::SHOPFLIX_NEW_ORDER_STATUS);
+        return $this->getOrders(Connector::SHOPFLIX_NEW_ORDER_STATUS);
     }
 
     private function getOrders($orderStatus, $startTime = false, $endTime = false): array
@@ -189,68 +249,68 @@ class Connector
             $data = [
                 "order" =>
                     [
-                        OrderInterface::SHOPFLIX_ORDER_ID => $responseObject['order_id'],
-                        OrderInterface::INCREMENT_ID => $responseObject['order_id'],
-                        OrderInterface::STATE => $this->getState($responseObject['status']),
-                        OrderInterface::STATUS => $this->getStatus($responseObject['status']),
-                        OrderInterface::SUBTOTAL => $responseObject['subtotal'],
-                        OrderInterface::DISCOUNT_AMOUNT => $responseObject['discount'],
-                        OrderInterface::TOTAL_PAID => $responseObject['total'],
-                        OrderInterface::CUSTOMER_EMAIL => $responseObject['email'],
-                        OrderInterface::CUSTOMER_FIRSTNAME => $responseObject['firstname'],
-                        OrderInterface::CUSTOMER_LASTNAME => $responseObject['lastname'],
-                        OrderInterface::CUSTOMER_REMOTE_IP => $responseObject['ip_address'] ?? "",
-                        OrderInterface::CUSTOMER_NOTE => $responseObject['notes'],
-                        OrderInterface::CREATED_AT => $responseObject['timestamp']
+                        Connector::SHOPFLIX_ORDER_ID => $responseObject['order_id'],
+                        Connector::INCREMENT_ID => $responseObject['order_id'],
+                        Connector::STATE => $this->getState($responseObject['status']),
+                        Connector::STATUS => $this->getStatus($responseObject['status']),
+                        Connector::SUBTOTAL => $responseObject['subtotal'],
+                        Connector::DISCOUNT_AMOUNT => $responseObject['discount'],
+                        Connector::TOTAL_PAID => $responseObject['total'],
+                        Connector::CUSTOMER_EMAIL => $responseObject['email'],
+                        Connector::CUSTOMER_FIRSTNAME => $responseObject['firstname'],
+                        Connector::CUSTOMER_LASTNAME => $responseObject['lastname'],
+                        Connector::CUSTOMER_REMOTE_IP => $responseObject['ip_address'] ?? "",
+                        Connector::CUSTOMER_NOTE => $responseObject['notes'],
+                        Connector::CREATED_AT => $responseObject['timestamp']
                     ],
                 "addresses" => [
                     [
-                        AddressInterface::FIRSTNAME => !empty($responseObject["s_firstname"]) ? $responseObject["s_firstname"] : $responseObject['firstname'],
-                        AddressInterface::LASTNAME => !empty($responseObject["s_lastname"]) ? $responseObject["s_lastname"] : $responseObject['lastname'],
-                        AddressInterface::POSTCODE => $responseObject["s_zipcode"],
-                        AddressInterface::TELEPHONE => !empty($responseObject["s_phone"]) ? $responseObject["s_phone"] : $responseObject['phone'],
-                        AddressInterface::STREET => $responseObject["s_address"],
-                        AddressInterface::ADDRESS_TYPE => "shipping",
-                        AddressInterface::CITY => $responseObject['s_city'],
-                        AddressInterface::EMAIL => $responseObject['email'],
-                        AddressInterface::COUNTRY_ID => $responseObject['s_country'],
+                        Connector::FIRSTNAME => !empty($responseObject["s_firstname"]) ? $responseObject["s_firstname"] : $responseObject['firstname'],
+                        Connector::LASTNAME => !empty($responseObject["s_lastname"]) ? $responseObject["s_lastname"] : $responseObject['lastname'],
+                        Connector::POSTCODE => $responseObject["s_zipcode"],
+                        Connector::TELEPHONE => !empty($responseObject["s_phone"]) ? $responseObject["s_phone"] : $responseObject['phone'],
+                        Connector::STREET => $responseObject["s_address"],
+                        Connector::ADDRESS_TYPE => "shipping",
+                        Connector::CITY => $responseObject['s_city'],
+                        Connector::EMAIL => $responseObject['email'],
+                        Connector::COUNTRY_ID => $responseObject['s_country'],
 
                     ],
                     [
-                        AddressInterface::FIRSTNAME => !empty($responseObject["b_firstname"]) ? $responseObject["b_firstname"] : $responseObject['firstname'],
-                        AddressInterface::LASTNAME => !empty($responseObject["b_lastname"]) ? $responseObject["b_lastname"] : $responseObject['lastname'],
-                        AddressInterface::POSTCODE => $responseObject["b_zipcode"],
-                        AddressInterface::TELEPHONE => !empty($responseObject["b_phone"]) ? $responseObject["b_phone"] : $responseObject['phone'],
-                        AddressInterface::STREET => $responseObject["b_address"],
-                        AddressInterface::ADDRESS_TYPE => "billing",
-                        AddressInterface::CITY => $responseObject['b_city'],
-                        AddressInterface::EMAIL => $responseObject['email'],
-                        AddressInterface::COUNTRY_ID => $responseObject['b_country'],
+                        Connector::FIRSTNAME => !empty($responseObject["b_firstname"]) ? $responseObject["b_firstname"] : $responseObject['firstname'],
+                        Connector::LASTNAME => !empty($responseObject["b_lastname"]) ? $responseObject["b_lastname"] : $responseObject['lastname'],
+                        Connector::POSTCODE => $responseObject["b_zipcode"],
+                        Connector::TELEPHONE => !empty($responseObject["b_phone"]) ? $responseObject["b_phone"] : $responseObject['phone'],
+                        Connector::STREET => $responseObject["b_address"],
+                        Connector::ADDRESS_TYPE => "billing",
+                        Connector::CITY => $responseObject['b_city'],
+                        Connector::EMAIL => $responseObject['email'],
+                        Connector::COUNTRY_ID => $responseObject['b_country'],
                     ]
                 ],
                 "items" => [],
 
             ];
 
-            if (isset($responseObject["fields"][self::SHOPFLIX_IS_INVOICE]) && $responseObject["fields"][self::SHOPFLIX_IS_INVOICE] == "Y") {
-                $data[OrderInterface::IS_INVOICE] = true;
+            if (isset($responseObject["fields"][Connector::SHOPFLIX_IS_INVOICE]) && $responseObject["fields"][Connector::SHOPFLIX_IS_INVOICE] == "Y") {
+                $data[Connector::IS_INVOICE] = true;
                 $data["invoice"] = [
-                    OrderInterface::COMPANY_NAME => $responseObject["fields"][self::SHOPFLIX_COMPANY_NAME] ?? $responseObject["fields"][self::SHOPFLIX_COMPANY_OWNER],
-                    OrderInterface::COMPANY_ADDRESS => $responseObject["fields"][self::SHOPFLIX_COMPANY_ADDRESS],
-                    OrderInterface::COMPANY_OWNER => $responseObject["fields"][self::SHOPFLIX_COMPANY_OWNER],
-                    OrderInterface::COMPANY_VAT_NUMBER => $responseObject["fields"][self::SHOPFLIX_COMPANY_VAT_NUMBER],
-                    OrderInterface::TAX_OFFICE => $responseObject["fields"][self::SHOPFLIX_TAX_OFFICE],
+                    Connector::COMPANY_NAME => $responseObject["fields"][Connector::SHOPFLIX_COMPANY_NAME] ?? $responseObject["fields"][Connector::SHOPFLIX_COMPANY_OWNER],
+                    Connector::COMPANY_ADDRESS => $responseObject["fields"][Connector::SHOPFLIX_COMPANY_ADDRESS],
+                    Connector::COMPANY_OWNER => $responseObject["fields"][Connector::SHOPFLIX_COMPANY_OWNER],
+                    Connector::COMPANY_VAT_NUMBER => $responseObject["fields"][Connector::SHOPFLIX_COMPANY_VAT_NUMBER],
+                    Connector::TAX_OFFICE => $responseObject["fields"][Connector::SHOPFLIX_TAX_OFFICE],
                 ];
             } else {
-                $data[OrderInterface::IS_INVOICE] = false;
+                $data[Connector::IS_INVOICE] = false;
             }
 
 
             foreach ($responseObject['products'] as $product) {
                 $data["items"][] = [
-                    ItemInterface::SKU => $product['product_code'],
-                    ItemInterface::PRICE => $product['price'],
-                    ItemInterface::QTY => $product['amount']
+                    Connector::SKU => $product['product_code'],
+                    Connector::PRICE => $product['price'],
+                    Connector::QTY => $product['amount']
                 ];
             }
 
@@ -262,40 +322,40 @@ class Connector
     private function getState($status)
     {
         switch ($status) {
-            case self::SHOPFLIX_NEW_ORDER_STATUS:
-                return OrderInterface::STATE_PENDING_ACCEPTANCE;
-            case self::SHOPFLIX_CANCEL_ORDER_STATUS:
-                return OrderInterface::STATE_CANCELED;
-            case self::SHOPFLIX_READY_TO_SHIPPED_STATUS;
-            case self::SHOPFLIX_PARTIAL_ORDER_STATUS:
-            case self::SHOPFLIX_SHIPPED_ORDER_STATUS:
-            case self::SHOPFLIX_COMPLETED_ORDER_STATUS:
-            case self::SHOPFLIX_ON_THE_WAY_ORDER_STATUS:
-                return OrderInterface::STATE_COMPLETED;
-            case self::SHOPFLIX_REJECTED_STATUS:
-                return OrderInterface::STATE_REJECTED;
+            case Connector::SHOPFLIX_NEW_ORDER_STATUS:
+                return Connector::STATE_PENDING_ACCEPTANCE;
+            case Connector::SHOPFLIX_CANCEL_ORDER_STATUS:
+                return Connector::STATE_CANCELED;
+            case Connector::SHOPFLIX_READY_TO_SHIPPED_STATUS;
+            case Connector::SHOPFLIX_PARTIAL_ORDER_STATUS:
+            case Connector::SHOPFLIX_SHIPPED_ORDER_STATUS:
+            case Connector::SHOPFLIX_COMPLETED_ORDER_STATUS:
+            case Connector::SHOPFLIX_ON_THE_WAY_ORDER_STATUS:
+                return Connector::STATE_COMPLETED;
+            case Connector::SHOPFLIX_REJECTED_STATUS:
+                return Connector::STATE_REJECTED;
         }
     }
 
     private function getStatus($status)
     {
         switch ($status) {
-            case self::SHOPFLIX_NEW_ORDER_STATUS:
-                return OrderInterface::STATUS_PENDING_ACCEPTANCE;
-            case self::SHOPFLIX_CANCEL_ORDER_STATUS:
-                return OrderInterface::STATUS_CANCELED;
-            case self::SHOPFLIX_PARTIAL_ORDER_STATUS:
-                return OrderInterface::STATUS_PARTIAL_SHIPPED;
-            case self::SHOPFLIX_READY_TO_SHIPPED_STATUS:
-                return OrderInterface::STATUS_READY_TO_BE_SHIPPED;
-            case self::SHOPFLIX_SHIPPED_ORDER_STATUS:
-                return OrderInterface::STATUS_SHIPPED;
-            case self::SHOPFLIX_COMPLETED_ORDER_STATUS:
-                return OrderInterface::STATUS_COMPLETED;
-            case self::SHOPFLIX_ON_THE_WAY_ORDER_STATUS:
-                return OrderInterface::STATUS_ON_THE_WAY;
-            case self::SHOPFLIX_REJECTED_STATUS:
-                return OrderInterface::STATUS_REJECTED;
+            case Connector::SHOPFLIX_NEW_ORDER_STATUS:
+                return Connector::STATUS_PENDING_ACCEPTANCE;
+            case Connector::SHOPFLIX_CANCEL_ORDER_STATUS:
+                return Connector::STATUS_CANCELED;
+            case Connector::SHOPFLIX_PARTIAL_ORDER_STATUS:
+                return Connector::STATUS_PARTIAL_SHIPPED;
+            case Connector::SHOPFLIX_READY_TO_SHIPPED_STATUS:
+                return Connector::STATUS_READY_TO_BE_SHIPPED;
+            case Connector::SHOPFLIX_SHIPPED_ORDER_STATUS:
+                return Connector::STATUS_SHIPPED;
+            case Connector::SHOPFLIX_COMPLETED_ORDER_STATUS:
+                return Connector::STATUS_COMPLETED;
+            case Connector::SHOPFLIX_ON_THE_WAY_ORDER_STATUS:
+                return Connector::STATUS_ON_THE_WAY;
+            case Connector::SHOPFLIX_REJECTED_STATUS:
+                return Connector::STATUS_REJECTED;
 
         }
 
@@ -305,7 +365,7 @@ class Connector
     {
 
         return $this->getOrders(
-            self::SHOPFLIX_PARTIAL_ORDER_STATUS,
+            Connector::SHOPFLIX_PARTIAL_ORDER_STATUS,
             $this->_startTime,
             $this->_endTime
         );
@@ -315,7 +375,7 @@ class Connector
     {
 
         return $this->getOrders(
-            self::SHOPFLIX_SHIPPED_ORDER_STATUS,
+            Connector::SHOPFLIX_SHIPPED_ORDER_STATUS,
             $this->_startTime,
             $this->_endTime
         );
@@ -325,7 +385,7 @@ class Connector
     {
 
         return $this->getOrders(
-            self::SHOPFLIX_COMPLETED_ORDER_STATUS,
+            Connector::SHOPFLIX_COMPLETED_ORDER_STATUS,
             $this->_startTime,
             $this->_endTime
         );
@@ -336,7 +396,7 @@ class Connector
     {
 
         return $this->getOrders(
-            self::SHOPFLIX_CANCEL_ORDER_STATUS,
+            Connector::SHOPFLIX_CANCEL_ORDER_STATUS,
             $this->_startTime,
             $this->_endTime
         );
@@ -347,7 +407,7 @@ class Connector
     {
 
         return $this->getOrders(
-            self::SHOPFLIX_ON_THE_WAY_ORDER_STATUS,
+            Connector::SHOPFLIX_ON_THE_WAY_ORDER_STATUS,
             $this->_startTime,
             $this->_endTime
         );
@@ -430,7 +490,7 @@ class Connector
     public function rejected($orderId, $message)
     {
         $requestData = [
-            "status" => self::SHOPFLIX_REJECTED_STATUS,
+            "status" => Connector::SHOPFLIX_REJECTED_STATUS,
             "notify_user" => 0,
             "notify_department" => 0,
             "notify_vendor" => 0,
@@ -564,21 +624,21 @@ class Connector
             $data[$key] = [
                 "shipment" =>
                     [
-                        ShipmentInterface::INCREMENT_ID => $shipment["shipment_id"],
-                        ShipmentInterface::SHIPMENT_STATUS => $this->getShippingStatus($shipment['status']),
-                        ShipmentInterface::CREATED_AT => $shipment['shipment_timestamp'],
+                        Connector::INCREMENT_ID => $shipment["shipment_id"],
+                        Connector::SHIPMENT_STATUS => $this->getShippingStatus($shipment['status']),
+                        Connector::CREATED_AT => $shipment['shipment_timestamp'],
                     ],
-                ShipmentInterface::ITEMS => [],
-                ShipmentInterface::TRACKS => [
-                    ShipmentTrackInterface::TRACK_NUMBER => $shipment['tracking_number'],
-                    ShipmentTrackInterface::TRACKING_URL => $shipment['carrier_info']['tracking_url'],
+                Connector::ITEMS => [],
+                Connector::TRACKS => [
+                    Connector::TRACK_NUMBER => $shipment['tracking_number'],
+                    Connector::TRACKING_URL => $shipment['carrier_info']['tracking_url'],
 
                 ],
             ];
             foreach ($shipment['products_info'] as $product) {
-                $data[$key][ShipmentInterface::ITEMS][] = [
-                    ShipmentItemInterface::SKU => $product['product_id'],
-                    ShipmentItemInterface::QTY => $product['product_qty']
+                $data[$key][Connector::ITEMS][] = [
+                    Connector::SKU => $product['product_id'],
+                    Connector::QTY => $product['product_qty']
                 ];
             }
         }
