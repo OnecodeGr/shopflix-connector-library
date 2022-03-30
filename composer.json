@@ -2,6 +2,7 @@
     "name": "onecode/shopflix-connector-library",
     "type": "library",
     "require": {
+        "php":">=7.3",
         "guzzlehttp/guzzle": "^6.5.5",
         "spyrmp/json-serializer-deserializer": "^1.0"
     },
