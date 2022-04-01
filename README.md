@@ -2,7 +2,7 @@
 
 Library to connect with Shopflix (https://shopflix.gr) for vendors
 
-For >= Php7.1 <= Php7.2 use the 7.1 branch. Via composer
+For >= Php7.1 <= Php7.2 use the php71_php72 branch. Via composer
 
 ``composer require onecode/shopflix-connector-library:0.0.1``
 
