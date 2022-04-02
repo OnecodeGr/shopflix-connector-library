@@ -14,6 +14,7 @@ interface ReturnOrderInterface
     const SHOPFLIX_PARENT_ORDER_ID = "shopflix_parent_order_id";
     const INCREMENT_ID = "increment_id";
     const STATUS = "status";
+    const STATE  = "state";
     const SUBTOTAL = "subtotal";
     const TOTAL_PAID = "total_paid";
     const CUSTOMER_EMAIL = "customer_email";
@@ -31,5 +32,11 @@ interface ReturnOrderInterface
     const STATUS_RETURN_DECLINED = "declined";
     const STATUS_RETURN_COMPLETED = "completed";
 
+
+    const STATE_PROCESS_FROM_SHOPFLIX = "process_from_shopflix";
+    const STATE_DELIVERED_TO_THE_STORE = "delivered";
+    const STATE_APPROVED = "approved";
+    const STATE_DECLINED = "declined";
+    const STATE_COMPLETED = "completed";
 
 }

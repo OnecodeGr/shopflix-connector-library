@@ -684,6 +684,7 @@ class Connector
                         ReturnOrderInterface::SHOPFLIX_ORDER_ID => $responseObject['order_id'],
                         ReturnOrderInterface::SHOPFLIX_PARENT_ORDER_ID => $responseObject['return_order_id'],
                         ReturnOrderInterface::INCREMENT_ID => $responseObject['order_id'],
+                        ReturnOrderInterface::STATE =>  $this->getReturnState($responseObject['status']),
                         ReturnOrderInterface::STATUS => $this->getReturnStatus($responseObject['status']),
                         ReturnOrderInterface::SUBTOTAL => $responseObject['subtotal'],
                         ReturnOrderInterface::TOTAL_PAID => $responseObject['subtotal'],
@@ -733,6 +734,21 @@ class Connector
         return $data;
     }
 
+    public function getReturnState($status){
+        switch ($status) {
+            case self::SHOPFLIX_RETURN_ORDER_REQUESTED_STATUS:
+            case self::SHOPFLIX_RETURN_ORDER_ON_WAY_TO_STORE_STATUS:
+                return ReturnOrderInterface::STATE_PROCESS_FROM_SHOPFLIX;
+            case self::SHOPFLIX_RETURN_ORDER_RETURNED_DELIVERED_STORE_STATUS:
+                return ReturnOrderInterface::STATE_DELIVERED_TO_THE_STORE;
+            case self::SHOPFLIX_RETURN_ORDER_RETURNED_APPROVED_TO_STORE_STATUS:
+                return ReturnOrderInterface::STATE_APPROVED;
+            case self::SHOPFLIX_RETURN_ORDER_DECLINED_STATUS:
+                return ReturnOrderInterface::STATUS_RETURN_DECLINED;
+            case self::SHOPFLIX_RETURN_ORDER_COMPLETED_STATUS:
+                return ReturnOrderInterface::STATE_COMPLETED;
+        }
+    }
     public function getReturnStatus($status)
     {
         switch ($status) {
