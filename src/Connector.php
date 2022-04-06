@@ -793,5 +793,45 @@ class Connector
     {
         return $this->getReturnOrders(self::SHOPFLIX_RETURN_ORDER_RETURNED_APPROVED_TO_STORE_STATUS, $this->_startTime, $this->_endTime);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function approveReturnedOrder($orderId){
+        $requestData = ["status" => self::SHOPFLIX_RETURN_ORDER_RETURNED_APPROVED_TO_STORE_STATUS];
+
+        $this->updateReturnOrder($orderId, $requestData);
+    }
+
+
+    /**
+     * @throws Exception
+     */
+    public function declineReturnedOrder($orderId){
+        $requestData = ["status" => self::SHOPFLIX_RETURN_ORDER_DECLINED_STATUS];
+        $this->updateReturnOrder($orderId, $requestData);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function updateReturnOrder($orderId, $requestData = [])
+    {
+        $path = $this->_path . "returns/$orderId";
+        $response = $this->_httpClient->put($path, [RequestOptions::JSON => $requestData]);
+        if ($response->getStatusCode() >= 400 && $response->getStatusCode() <= 500) {
+            throw new Exception($response->getBody()->getContents());
+        }
+
+
+        try {
+            $this->_jsonSerializer->deserialize($response->getBody()->getContents());
+        } catch (InvalidArgumentException $e) {
+            throw new Exception($response->getBody()->getContents());
+        }
+
+
+    }
+
 }
 
