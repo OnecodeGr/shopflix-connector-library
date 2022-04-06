@@ -684,7 +684,7 @@ class Connector
                         ReturnOrderInterface::SHOPFLIX_ORDER_ID => $responseObject['order_id'],
                         ReturnOrderInterface::SHOPFLIX_PARENT_ORDER_ID => $responseObject['return_order_id'],
                         ReturnOrderInterface::INCREMENT_ID => $responseObject['order_id'],
-                        ReturnOrderInterface::STATE =>  $this->getReturnState($responseObject['status']),
+                        ReturnOrderInterface::STATE => $this->getReturnState($responseObject['status']),
                         ReturnOrderInterface::STATUS => $this->getReturnStatus($responseObject['status']),
                         ReturnOrderInterface::SUBTOTAL => $responseObject['subtotal'],
                         ReturnOrderInterface::TOTAL_PAID => $responseObject['subtotal'],
@@ -734,7 +734,8 @@ class Connector
         return $data;
     }
 
-    public function getReturnState($status){
+    public function getReturnState($status)
+    {
         switch ($status) {
             case self::SHOPFLIX_RETURN_ORDER_REQUESTED_STATUS:
             case self::SHOPFLIX_RETURN_ORDER_ON_WAY_TO_STORE_STATUS:
@@ -749,6 +750,7 @@ class Connector
                 return ReturnOrderInterface::STATE_COMPLETED;
         }
     }
+
     public function getReturnStatus($status)
     {
         switch ($status) {
