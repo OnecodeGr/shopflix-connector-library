@@ -63,7 +63,7 @@ class ReturnOrdersTest extends TestCase
 
     public function testGetDeliveredToStoreReturnedOrders()
     {
-        $response = $this->connector->getCompletedReturnedOrders();
+        $response = $this->connector->getDeclinedReturnedOrders();
         $this->assertNull($this->writeResponse("delivered.json", json_encode($response, JSON_PRETTY_PRINT)));
     }
 }
