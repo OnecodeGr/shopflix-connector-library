@@ -13,5 +13,5 @@ interface ReturnItemInterface
     const SKU = "sku";
     const PRICE = "price";
     const QTY = "qty";
-    const REASON_TEXT = "reason_text";
+    const RETURN_REASON = "return_reason";
 }
