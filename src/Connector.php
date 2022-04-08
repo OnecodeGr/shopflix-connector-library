@@ -828,7 +828,7 @@ class Connector
     /**
      * @throws Exception
      */
-    public function declineReturnedOrder($orderId, $message)
+    public function declineReturnedOrder($orderId, $message = "")
     {
         $requestData = ["status" => self::SHOPFLIX_RETURN_ORDER_DECLINED_STATUS];
         $this->updateReturnOrder($orderId, $requestData);
