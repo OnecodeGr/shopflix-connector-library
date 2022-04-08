@@ -797,18 +797,10 @@ class Connector
     /**
      * @throws Exception
      */
-    public function approveReturnedOrder($orderId){
+    public function approveReturnedOrder($orderId)
+    {
         $requestData = ["status" => self::SHOPFLIX_RETURN_ORDER_RETURNED_APPROVED_TO_STORE_STATUS];
 
-        $this->updateReturnOrder($orderId, $requestData);
-    }
-
-
-    /**
-     * @throws Exception
-     */
-    public function declineReturnedOrder($orderId){
-        $requestData = ["status" => self::SHOPFLIX_RETURN_ORDER_DECLINED_STATUS];
         $this->updateReturnOrder($orderId, $requestData);
     }
 
@@ -831,6 +823,15 @@ class Connector
         }
 
 
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function declineReturnedOrder($orderId, $message)
+    {
+        $requestData = ["status" => self::SHOPFLIX_RETURN_ORDER_DECLINED_STATUS];
+        $this->updateReturnOrder($orderId, $requestData);
     }
 
 }
