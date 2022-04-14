@@ -60,7 +60,6 @@ class Connector
     const SHOPFLIX_RETURN_ORDER_RETURNED_DELIVERED_STORE_STATUS = "T";
     const SHOPFLIX_RETURN_ORDER_RETURNED_APPROVED_TO_STORE_STATUS = "V";
     const SHOPFLIX_RETURN_ORDER_DECLINED_STATUS = "W";
-    const SHOPFLIX_RETURN_ORDER_COMPLETED_STATUS = "X";
 
     /**
      * @var Client
@@ -746,8 +745,6 @@ class Connector
                 return ReturnOrderInterface::STATE_APPROVED;
             case self::SHOPFLIX_RETURN_ORDER_DECLINED_STATUS:
                 return ReturnOrderInterface::STATUS_RETURN_DECLINED;
-            case self::SHOPFLIX_RETURN_ORDER_COMPLETED_STATUS:
-                return ReturnOrderInterface::STATE_COMPLETED;
         }
     }
 
@@ -764,15 +761,10 @@ class Connector
                 return ReturnOrderInterface::STATUS_RETURN_APPROVED;
             case self::SHOPFLIX_RETURN_ORDER_DECLINED_STATUS:
                 return ReturnOrderInterface::STATUS_RETURN_DECLINED;
-            case self::SHOPFLIX_RETURN_ORDER_COMPLETED_STATUS:
-                return ReturnOrderInterface::STATUS_RETURN_COMPLETED;
         }
     }
 
-    public function getCompletedReturnedOrders(): array
-    {
-        return $this->getReturnOrders(self::SHOPFLIX_RETURN_ORDER_COMPLETED_STATUS, $this->_startTime, $this->_endTime);
-    }
+
 
     public function getDeclinedReturnedOrders(): array
     {

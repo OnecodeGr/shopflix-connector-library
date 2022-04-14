@@ -37,6 +37,5 @@ interface ReturnOrderInterface
     const STATE_DELIVERED_TO_THE_STORE = "delivered";
     const STATE_APPROVED = "approved";
     const STATE_DECLINED = "declined";
-    const STATE_COMPLETED = "completed";
 
 }
