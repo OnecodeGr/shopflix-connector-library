@@ -218,7 +218,7 @@ class Connector
                         AddressInterface::STREET => $responseObject["s_address"],
                         AddressInterface::ADDRESS_TYPE => "shipping",
                         AddressInterface::CITY => $responseObject['s_city'],
-                        AddressInterface::EMAIL => $responseObject['email'],
+                        AddressInterface::EMAIL => $responseObject['order_id']."@shopflix.gr",
                         AddressInterface::COUNTRY_ID => $responseObject['s_country'],
 
                     ],
@@ -230,7 +230,7 @@ class Connector
                         AddressInterface::STREET => $responseObject["b_address"],
                         AddressInterface::ADDRESS_TYPE => "billing",
                         AddressInterface::CITY => $responseObject['b_city'],
-                        AddressInterface::EMAIL => $responseObject['email'],
+                        AddressInterface::EMAIL => $responseObject['order_id']."@shopflix.gr",
                         AddressInterface::COUNTRY_ID => $responseObject['b_country'],
                     ]
                 ],
@@ -703,7 +703,7 @@ class Connector
                         AddressInterface::STREET => $responseObject["s_address"],
                         AddressInterface::ADDRESS_TYPE => "shipping",
                         AddressInterface::CITY => $responseObject['s_city'],
-                        AddressInterface::EMAIL => $responseObject['email'],
+                        AddressInterface::EMAIL => $responseObject['order_id']."@shopflix.gr",
                         AddressInterface::COUNTRY_ID => $responseObject['s_country'],
 
                     ],
@@ -715,7 +715,7 @@ class Connector
                         AddressInterface::STREET => $responseObject["b_address"],
                         AddressInterface::ADDRESS_TYPE => "billing",
                         AddressInterface::CITY => $responseObject['b_city'],
-                        AddressInterface::EMAIL => $responseObject['email'],
+                        AddressInterface::EMAIL => $responseObject['order_id']."@shopflix.gr",
                         AddressInterface::COUNTRY_ID => $responseObject['b_country'],
                     ]
                 ],
