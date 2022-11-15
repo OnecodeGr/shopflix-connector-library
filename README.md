@@ -1,5 +1,9 @@
 # onecode/shopflix_connector_library
 
+[![GitHub version](https://badge.fury.io/gh/OnecodeGr%2Fshopflix-connector-library.svg)](https://badge.fury.io/gh/OnecodeGr%2Fshopflix-connector-library)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.md)
+[![PHP Version Require](http://poser.pugx.org/onecode/shopflix-connector-library/require/php)](https://packagist.org/packages/onecode/shopflix-connector-library)
+
 Library to connect with Shopflix (https://shopflix.gr) for vendors
 
 For >= Php7.1 <= Php7.2 use the php71_php72 branch. Via composer
