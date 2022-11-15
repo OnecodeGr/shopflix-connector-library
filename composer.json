@@ -1,7 +1,7 @@
 {
     "name": "onecode/shopflix-connector-library",
     "type": "library",
-    "description":"Official SHOPFLIX conenctor library for php prohects by Onecode"
+    "description":"Official SHOPFLIX conenctor library for php prohects by Onecode",
     "require": {
         "php":">=7.3",
         "guzzlehttp/guzzle": "^6.5.5",
