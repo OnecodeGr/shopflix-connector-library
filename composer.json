@@ -16,7 +16,7 @@
             "Onecode\\ShopFlixConnector\\Tests\\": "tests/"
         }
     },
-    "license": "LGPL-3.0",
+    "license": "MIT",
     "version": "1.0.9",
     "authors": [
         {
