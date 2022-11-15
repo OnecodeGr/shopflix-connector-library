@@ -1,6 +1,7 @@
 {
     "name": "onecode/shopflix-connector-library",
     "type": "library",
+    "description":"Official SHOPFLIX conenctor library for php prohects by Onecode"
     "require": {
         "php":">=7.3",
         "guzzlehttp/guzzle": "^6.5.5",
@@ -20,8 +21,8 @@
     "version": "1.0.9",
     "authors": [
         {
-            "name": "spyrm",
-            "email": "spyros@onecode.gr"
+            "name": "Onecode P.C",
+            "email": "support@onecode.gr"
         }
     ],
     "require-dev": {
