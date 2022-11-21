@@ -3,8 +3,8 @@
     "type": "library",
     "description":"Official SHOPFLIX connector library for php projects by Onecode",
     "require": {
-        "php": "^7.3||^8.0",
-        "guzzlehttp/guzzle": "6.5.*||7.4.*",
+        "php": ">=7.3",
+        "guzzlehttp/guzzle": ">=6.5",
         "spyrmp/json-serializer-deserializer": "^1.0"
     },
     "autoload": {
